@@ -1,12 +1,12 @@
 version: 2.1
 jobs:
-  execute-cypress:
+  execute-detox:
     docker:
       - image: circleci/android:api-24-node
     environment:
       JVM_OPTS: -Xmx3200m
-      EMULATOR_NAME: cypressTestEmulator
-      EMULATOR_OPTIONS: -no-window -noaudio -no-boot-anim -accel on
+      EMULATOR_NAME: detoxTestEmulator
+      EMULATOR_OPTIONS: -no-window -noaudio -no-boot-anim
       EMULATOR_CONFIG: system-images;android-24;default;armeabi-v7a
     steps:
       - checkout
@@ -34,7 +34,7 @@ jobs:
           name: Setup Emulator
           command: sdkmanager "${EMULATOR_CONFIG}" && echo "no" | avdmanager create avd -n $EMULATOR_NAME -k "${EMULATOR_CONFIG}"
       - run:
-          name: Build cypress
+          name: Build detox
           command: detox build -c android.emu.release -l verbose
       - run:
           name: Launch Emulator
@@ -42,7 +42,7 @@ jobs:
           command: |
             cd ${ANDROID_HOME}/emulator;ls
             export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib
-            emulator -avd $EMULATOR_NAME -no-window -noaudio -no-boot-anim
+            emulator -avd $EMULATOR_NAME $EMULATOR_OPTIONS
 
       - run:
           name: Wait for emulator boot
@@ -50,7 +50,7 @@ jobs:
             circle-android wait-for-boot
             adb shell input keyevent 82
       - run:
-          name: Test cypress
+          name: Test detox
           command: detox test -c android.emu.release -l verbose
 
 
@@ -58,4 +58,4 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - execute-cypress
+      - execute-detox
