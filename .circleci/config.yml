@@ -7,7 +7,7 @@ jobs:
       JVM_OPTS: -Xmx3200m
       EMULATOR_NAME: cypressTestEmulator
       EMULATOR_OPTIONS: -no-window -noaudio -no-boot-anim -no-window -accel on
-      EMULATOR_CONFIG: system-images;android-25;google_apis;armeabi-v7a
+      EMULATOR_CONFIG: system-images;android-29;google_apis_playstore;x86
     steps:
       - checkout
       - attach_workspace:
@@ -44,7 +44,6 @@ jobs:
           name: Wait for emulator boot
           command: |
             circle-android wait-for-boot
-            adb shell input keyevent 82
             adb shell input keyevent 82
       - run:
           name: Build cypress
