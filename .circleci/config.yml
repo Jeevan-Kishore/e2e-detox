@@ -7,7 +7,7 @@ jobs:
       JVM_OPTS: -Xmx3200m
       EMULATOR_NAME: cypressTestEmulator
       EMULATOR_OPTIONS: -no-window -noaudio -no-boot-anim -no-window -accel on
-      EMULATOR_CONFIG: system-images;android-29;google_apis_playstore;x86_64
+      EMULATOR_CONFIG: system-images;android-25;google_apis;armeabi-v7a
     steps:
       - checkout
       - attach_workspace:
