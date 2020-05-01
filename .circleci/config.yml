@@ -18,6 +18,9 @@ jobs:
           name: Install npm dependencies
           command: npm i
       - run:
+          name: Install detox cli
+          command: npm install -g detox-cli
+      - run:
           name: Chmod permissions
           command: cd android && sudo chmod +x ./gradlew
       - run:
