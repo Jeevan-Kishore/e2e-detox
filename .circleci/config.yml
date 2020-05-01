@@ -29,7 +29,7 @@ jobs:
           key: jars-{{ checksum "android/build.gradle" }}-{{ checksum  "android/app/build.gradle" }}
       - run:
           name: Setup Emulator
-          command: sdkmanager "${EMULATOR_CONFIG}" && echo "no" | avdmanager create $EMULATOR_NAME -n test -k "${EMULATOR_CONFIG}"
+          command: sdkmanager "${EMULATOR_CONFIG}" && echo "no" | avdmanager create avd -n $EMULATOR_NAME -k "${EMULATOR_CONFIG}"
       - run:
           name: Launch Emulator
           command: |
