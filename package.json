@@ -34,7 +34,7 @@
         "build": "cd android && ./gradlew app:assembleDebug assembleAndroidTest -DtestBuildType=debug && cd ..",
         "type": "android.emulator",
         "device": {
-          "avdName": "cypressTestEmulator"
+          "avdName": "detoxTestEmulator"
         }
       },
       "android.emu.release": {
@@ -42,7 +42,7 @@
         "build": "cd android && ./gradlew app:assembleRelease assembleAndroidTest -DtestBuildType=release && cd ..",
         "type": "android.emulator",
         "device": {
-          "avdName": "cypressTestEmulator"
+          "avdName": "detoxTestEmulator"
         }
       },
       "ios.sim.release": {
