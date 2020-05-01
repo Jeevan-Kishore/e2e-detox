@@ -2,12 +2,12 @@ version: 2.1
 jobs:
   execute-cypress:
     docker:
-      - image: circleci/android:api-29-node
+      - image: circleci/android:api-24-node
     environment:
       JVM_OPTS: -Xmx3200m
       EMULATOR_NAME: cypressTestEmulator
       EMULATOR_OPTIONS: -no-window -noaudio -no-boot-anim -no-window -accel on
-      EMULATOR_CONFIG: system-images;android-29;google_apis_playstore;x86
+      EMULATOR_CONFIG: system-images;android-24;default;armeabi-v7a
     steps:
       - checkout
       - attach_workspace:
