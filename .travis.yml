@@ -16,6 +16,7 @@ before_install:
 install:
   - npm install
   - npm install detox-cli
+  - npm install react-native-cli
   - cd ios/ && pod install && cd ..
   - pwd
   - ls -la
