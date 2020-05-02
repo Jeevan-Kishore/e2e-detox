@@ -1,0 +1,19 @@
+language: node_js
+node_js:
+  - "node"
+os: osx
+osx_image: xcode11.3
+addons:
+  homebrew:
+    taps: wix/brew
+    packages:
+      - applesimutils
+before_install:
+  - sudo gem install cocoapods
+install:
+  - npm install -g detox-cli
+  - npm install
+  - cd ios/ && pod install
+script:
+  - detox build -c ios.sim.release -l verbose
+  - detox test -c ios.sim.release -l verbose
