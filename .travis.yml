@@ -15,6 +15,7 @@ before_install:
 install:
   - npm install
   - npm install detox-cli
+  - cd ios/ && pod install
 script:
   - detox build -c ios.sim.release -l verbose
   - detox test -c ios.sim.release -l verbose
