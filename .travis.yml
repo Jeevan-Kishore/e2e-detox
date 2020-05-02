@@ -12,6 +12,7 @@ env:
 install:
   - brew tap wix/brew
   - brew install applesimutils
+  - gem install xcpretty
   - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
   - export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
   - nvm install $NODE_VERSION
@@ -23,5 +24,5 @@ install:
   - npm install -g detox-cli
   - cd ios/ && pod install && cd ..
 script:
-  - detox build --configuration ios.sim.release
+  - set -o pipefail && detox build --configuration ios.sim.release
   - detox test --configuration ios.sim.release --cleanup
