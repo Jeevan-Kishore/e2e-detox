@@ -3,6 +3,8 @@ node_js:
   - "node"
 os: osx
 osx_image: xcode11.3
+env:
+  - SH=bash
 addons:
   homebrew:
     taps: wix/brew
@@ -13,7 +15,6 @@ before_install:
 install:
   - npm install
   - npm install detox-cli
-  - cd ios/ && pod install
 script:
   - detox build -c ios.sim.release -l verbose
   - detox test -c ios.sim.release -l verbose
