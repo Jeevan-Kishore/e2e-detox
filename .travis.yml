@@ -10,9 +10,8 @@ addons:
       - applesimutils
 before_install:
   - sudo gem install cocoapods
-install:
-  - npm config set prefix /usr/local
   - npm install -g detox-cli
+install:
   - npm install
   - cd ios/ && pod install
 script:
