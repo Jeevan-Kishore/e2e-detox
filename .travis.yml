@@ -10,9 +10,9 @@ addons:
       - applesimutils
 before_install:
   - sudo gem install cocoapods
-  - npm install -g detox-cli
 install:
   - npm install
+  - npm install detox-cli
   - cd ios/ && pod install
 script:
   - detox build -c ios.sim.release -l verbose
