@@ -15,10 +15,6 @@ matrix:
 
           # The SDK version used to compile your project
           - android-22
-      before_script:
-        - ls -la
-        - pwd
-        - ./travisci/android-before-scripts.sh
       before_install:
         - echo yes | sdkmanager "build-tools;27.0.1"
         - ./travisci/android-before-install.sh
