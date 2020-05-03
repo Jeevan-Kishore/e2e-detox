@@ -6,6 +6,6 @@ export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 nvm install 12.13.0
 nvm use 12.13.0
 nvm alias default 12.13.0
-npm install -g react-native-npm
-npm install -g detox-cli
+npm install react-native-npm
+npm install detox-cli
 cd ios/ && pod install && cd ..
