@@ -6,7 +6,7 @@ jobs:
     environment:
       JVM_OPTS: -Xmx3200m
       EMULATOR_NAME: detoxTestEmulator
-      EMULATOR_OPTIONS: -no-window -no-audio -no-boot-anim
+      EMULATOR_OPTIONS: -no-window -noaudio -no-boot-anim
       EMULATOR_CONFIG: system-images;android-24;default;armeabi-v7a
     steps:
       - checkout
