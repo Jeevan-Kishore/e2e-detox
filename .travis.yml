@@ -23,6 +23,7 @@ matrix:
         - pwd
         - ./travisci/android-before-scripts.sh
       before_install:
+        - echo yes | sdkmanager "build-tools;27.0.1"
         - ./travisci/android-before-install.sh
       install:
         - ./travisci/android-install.sh
