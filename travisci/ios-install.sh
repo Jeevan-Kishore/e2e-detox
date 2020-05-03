@@ -1,6 +1,8 @@
 brew tap wix/brew
 brew install applesimutils
+brew install watchman
 gem install xcpretty
+gem install cocoapods
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
 export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 nvm install 12.13.0
