@@ -14,7 +14,7 @@ matrix:
           # - platform-tools
 
           # The SDK version used to compile your project
-          - android-24
+          - android-22
       before_script:
         - ls -la
         - pwd
