@@ -6,6 +6,9 @@ nvm alias default 12.13.0
 npm install react-native-npm
 npm install detox-cli
 
+npm install -g react-native-npm
+npm install -g detox-cli
+
 
 cd android && sudo chmod +x ./gradlew
 ./gradlew androidDependencies
