@@ -69,10 +69,21 @@ jobs:
           paths:
             - vendor/bundle
       - run:
-          name: "Install React Native dependencies"
+          name: Install React Native dependencies
           command: |
             brew update
             brew install watchman
+            npm install -g detox-cli
+      - run:
+          name: Run pod install
+          command: cd ios/ && pod install
+      - run:
+          name: Build detox
+          command: detox build -c ios.sim.release -l verbose
+      - run:
+          name: Test detox
+          command: detox test -c ios.sim.release -l verbose
+
 
 
 

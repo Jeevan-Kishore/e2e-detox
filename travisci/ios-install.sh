@@ -10,6 +10,6 @@ nvm install 12.13.0
 nvm use 12.13.0
 nvm alias default 12.13.0
 npm install
-npm install -g react-native-npm
+npm install -g react-native
 npm install -g detox-cli
 cd ios/ && pod install && cd ..
