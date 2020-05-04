@@ -61,13 +61,6 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - restore_cache:
-          key: 1-gems-{{ checksum "Gemfile.lock" }}
-      - run: bundle check || bundle install --path vendor/bundle
-      - save_cache:
-          key: 1-gems-{{ checksum "Gemfile.lock" }}
-          paths:
-            - vendor/bundle
       - run:
           name: Install React Native dependencies
           command: |
