@@ -64,7 +64,12 @@ jobs:
       - run:
           name: Install React Native dependencies
           command: |
+            brew tap wix/brew
+            brew install applesimutils
             brew install watchman
+            gem install xcpretty
+            gem install cocoapods
+            npm install -g react-native
             npm install -g detox-cli
       - run:
           name: Install npm dependencies
