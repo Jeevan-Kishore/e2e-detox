@@ -68,7 +68,7 @@ jobs:
             npm install -g detox-cli
       - run:
           name: Install npm dependencies
-          command: cd ios/ && pod install
+          command: npm i
       - run:
           name: Run pod install
           command: cd ios/ && pod install
