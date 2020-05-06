@@ -32,18 +32,14 @@ jobs:
           key: jars-{{ checksum "android/build.gradle" }}-{{ checksum  "android/app/build.gradle" }}
       - run:
           name: Setup Emulator
-          command: sdkmanager "${EMULATOR_CONFIG}" && echo "no" | avdmanager create avd -n $EMULATOR_NAME -k "${EMULATOR_CONFIG}"
+          command: echo yes | sdkmanager "system-images;android-24;default;armeabi-v7a"
+
       - run:
           name: Build detox
           command: detox build -c android.emu.release -l verbose
       - run:
-          name: Launch Emulator
-          background: true
-          command: |
-            cd ${ANDROID_HOME}/emulator;ls
-            export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib
-            emulator -avd $EMULATOR_NAME $EMULATOR_OPTIONS
-
+          name: Start Emulator
+          command: echo no | avdmanager create avd --force -n detoxTestEmulator -k "system-images;android-24;default;armeabi-v7a"
       - run:
           name: Wait for emulator boot
           command: |
