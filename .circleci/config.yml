@@ -67,8 +67,8 @@ jobs:
             brew tap wix/brew
             brew install applesimutils
             brew install watchman
-            gem install xcpretty
-            gem install cocoapods
+            sudo gem install xcpretty
+            sudo gem install cocoapods
             npm install -g react-native
             npm install -g detox-cli
       - run:
