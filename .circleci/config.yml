@@ -244,16 +244,3 @@ workflows:
     jobs:
       - android-test
       - ios-test
-
-  cron_detox_tests:
-    triggers:
-      - schedule:
-          cron: "0 0 * * *"
-          filters:
-            branches:
-              only:
-                - master
-
-    jobs:
-      - android-test
-      - ios-test

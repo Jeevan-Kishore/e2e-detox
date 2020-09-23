@@ -5,7 +5,7 @@ module.exports = {
       build: "cd android && ./gradlew app:assembleDebug assembleAndroidTest -DtestBuildType=debug && cd ..",
       type: "android.emulator",
       device: {
-        avdName: "Pixel_3a_API_R",
+        avdName: "Pixel_3a_API_29",
       },
     },
     "android.emu.release": {
@@ -13,7 +13,7 @@ module.exports = {
       build: "cd android && ./gradlew app:assembleRelease assembleAndroidTest -DtestBuildType=release && cd ..",
       type: "android.emulator",
       device: {
-        avdName: "Pixel_3a_API_R",
+        avdName: "Pixel_3a_API_29",
       },
     },
     "ios.sim.release": {
