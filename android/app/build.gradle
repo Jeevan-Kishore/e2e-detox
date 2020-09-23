@@ -173,6 +173,12 @@ android {
         pickFirst "lib/x86_64/libc++_shared.so"
     }
 
+    configurations.all {
+        resolutionStrategy {
+            force "com.facebook.soloader:soloader:0.8.1"
+        }
+    }
+
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
         variant.outputs.each { output ->

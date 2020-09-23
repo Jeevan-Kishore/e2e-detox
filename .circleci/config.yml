@@ -1,91 +1,241 @@
 version: 2.1
-jobs:
-  execute-android-detox:
-    docker:
-      - image: circleci/android:api-24-node
-    environment:
-      JVM_OPTS: -Xmx3200m
-      EMULATOR_NAME: detoxTestEmulator
-      EMULATOR_OPTIONS: -no-window -no-audio -no-boot-anim
-      EMULATOR_CONFIG: system-images;android-24;default;armeabi-v7a
+
+commands:
+
+  node-version:
+    description: "Install node version 12"
     steps:
-      - checkout
-      - attach_workspace:
-          at: .
+      - run:
+          name: 'Install Project Node'
+          command: |
+            set +x
+            source ~/.bashrc
+
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+
+            nvm install 12.13.0
+            NODE_DIR=$(dirname $(which node))
+            echo "export PATH=$NODE_DIR:\$PATH" >> $BASH_ENV
+
+  npm-dependencies:
+    description: "Get JavaScript dependencies"
+    steps:
+      - run:
+          name: Executing node version check
+          command: node -v
       - restore_cache:
-          key: jars-{{ checksum "android/build.gradle" }}-{{ checksum  "android/app/build.gradle" }}
+          name: Restore npm cache
+          key: v1-npm-{{ checksum "./package-lock.json" }}-{{ arch }}
       - run:
-          name: Install npm dependencies
-          command: npm i
-      - run:
-          name: Install detox cli
-          command: sudo npm install -g detox-cli
-      - run:
-          name: Chmod permissions
-          command: cd android && sudo chmod +x ./gradlew
-      - run:
-          name: Download Dependencies
-          command: cd android && ./gradlew androidDependencies
+          working_directory: .
+          name: Installing JavaScript dependencies
+          command: npm install
       - save_cache:
+          name: Save npm cache
+          key: v1-npm-{{ checksum "./package-lock.json" }}-{{ arch }}
+          paths:
+            - ././node_modules
+
+  pods-dependencies:
+    description: "Get cocoapods dependencies"
+    steps:
+      - restore_cache:
+          name: Restore cocoapods specs and pods
+          key: v1-cocoapods-{{ checksum "./ios/Podfile.lock" }}-{{ arch }}
+      - run:
+          name: Getting cocoapods dependencies
+          working_directory: ./ios
+          command: bundle exec pod install --deployment
+      - save_cache:
+          name: Save cocoapods specs and pods cache
+          key: v1-cocoapods-{{ checksum "./ios/Podfile.lock" }}-{{ arch }}
+          paths:
+            - ./ios/Pods
+            - ~/.cocoapods
+
+  gradle-dependencies:
+    description: "Get Gradle dependencies"
+    steps:
+      - run:
+          working_directory: ./android
+          name: Chmod permissions
+          command: sudo chmod +x ./gradlew
+      - restore_cache:
+          name: Restore Gradle cache
+          key: v1-gradle-{{ checksum "./android/build.gradle" }}-{{ checksum  "./android/app/build.gradle" }}-{{ arch }}
+      - run:
+          working_directory: ./android
+          name: Download Gradle dependencies
+          command: ./gradlew dependencies
+      - save_cache:
+          name: Save Gradle cache
           paths:
             - ~/.gradle
-          key: jars-{{ checksum "android/build.gradle" }}-{{ checksum  "android/app/build.gradle" }}
-      - run:
-          name: Setup Emulator
-          command: echo yes | sdkmanager "system-images;android-24;default;armeabi-v7a"
+          key: v1-gradle-{{ checksum "./android/build.gradle" }}-{{ checksum  "./android/app/build.gradle" }}-{{ arch }}
 
+  android-sdk-dependencies:
+    description: "Install and set android SDK"
+    steps:
       - run:
-          name: Build detox
-          command: detox build -c android.emu.release -l verbose
-      - run:
-          name: Start Emulator
-          command: echo no | avdmanager create avd --force -n detoxTestEmulator -k "system-images;android-24;default;armeabi-v7a"
-      - run:
-          name: Wait for emulator boot
+          name: set ANDROID_SDK_ROOT
           command: |
-            circle-android wait-for-boot
-            adb shell input keyevent 82
+            echo 'export ANDROID_SDK_ROOT=$HOME/android-tools'  >> $BASH_ENV
+
+      - restore_cache:
+          key: android=tools-v1-{{ checksum "scripts/install-android-tools.sh" }}-{{ arch }}
+
       - run:
-          name: Test detox
-          command: detox test -c android.emu.release -l verbose
+          name: install android tools
+          command: |
+            sh scripts/install-android-tools.sh
+            echo 'export PATH=$ANDROID_SDK_ROOT/tools/bin:$PATH'  >> $BASH_ENV
+            echo 'export PATH=$ANDROID_SDK_ROOT/tools:$PATH'  >> $BASH_ENV
+            echo 'export PATH=$ANDROID_SDK_ROOT/platform-tools:$PATH'  >> $BASH_ENV
+            echo 'export PATH=$ANDROID_SDK_ROOT/emulator:$PATH'  >> $BASH_ENV
+            source $BASH_ENV
+            sdkmanager --list
+
+      - save_cache:
+          key: android=tools-v1-{{ checksum "scripts/install-android-tools.sh" }}-{{ arch }}
+          paths:
+            - /Users/distiller/android-tools
 
 
-  execute-iOS-detox:
+  react-native-dependencies:
+    description: "Install RN dependencies"
+    steps:
+      - run:
+          name: "Install watchman"
+          command: |
+            HOMEBREW_NO_AUTO_UPDATE=1 brew install watchman
+
+
+  simulator-dependencies:
+    description: "Install iOS simulator dependencies"
+    steps:
+      - run:
+          name: "Install applesimutils"
+          command: |
+            HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew
+            HOMEBREW_NO_AUTO_UPDATE=1 brew install applesimutils
+
+  create-launch-android-emulator:
+    description: "create and launch android emulators"
+    steps:
+      - run:
+          name: create AVD
+          command: echo "no" | avdmanager --verbose create avd --force --name "Pixel_3a_API_29" --package "system-images;android-29;google_apis;x86_64"
+
+      - run:
+          name: start AVD
+          command: emulator @Pixel_3a_API_29 -no-window -no-audio
+          background: true
+
+      - run:
+          name: wait for emulator
+          command: adb wait-for-device shell 'while [[ -z $(getprop dev.bootcomplete) ]]; do sleep 1; done;'
+
+  clear-detox-cache:
+    description: "Clears detox framework cache"
+    steps:
+      - run:
+          working_directory: .
+          name: Clear detox cache
+          command: |
+            npx detox clean-framework-cache
+            npx detox build-framework-cache
+
+
+jobs:
+
+  android-test:
     macos:
       xcode: 11.3.1
     steps:
-      - checkout
       - attach_workspace:
           at: .
+      - checkout
+      - node-version
+      - npm-dependencies
+      - react-native-dependencies
+      - gradle-dependencies
+      - android-sdk-dependencies
+      - create-launch-android-emulator
+      - clear-detox-cache
+
       - run:
-          name: Install React Native dependencies
-          command: |
-            brew tap wix/brew
-            brew install applesimutils
-            brew install watchman
-            sudo gem install xcpretty
-            sudo gem install cocoapods
-            npm install -g react-native
-            npm install -g detox-cli
+          working_directory: .
+          name: Run android detox build
+          command: npx detox build -c android.emu.release
+
       - run:
-          name: Install npm dependencies
-          command: npm i
-      - run:
-          name: Run pod install
-          command: cd ios/ && pod install
-      - run:
-          name: Build detox
-          command: detox build -c ios.sim.release -l verbose
-      - run:
-          name: Test detox
-          command: detox test -c ios.sim.release -l verbose
+          working_directory: .
+          name: Run android detox test
+          command: npx detox test -c android.emu.release --headless --record-logs all
+
+      - store_artifacts:
+          path: ././artifacts
+          destination: ./jest-logs
+
+      - store_artifacts:
+          path: ././reports
+          destination: ./reports
 
 
+  ios-test:
+    macos:
+      xcode: 11.3.1
+    steps:
+      - attach_workspace:
+          at: .
+      - checkout
+      - node-version
+      - npm-dependencies
+      - pods-dependencies
+      - react-native-dependencies
+      - simulator-dependencies
+      - clear-detox-cache
+
+      - run:
+          working_directory: .
+          name: Run iOS detox build
+          command: npx detox build -c ios.sim.release
+
+      - run:
+          working_directory: .
+          name: Run iOS detox test
+          command: npx detox test -c ios.sim.release --record-logs all > test-summary.txt
+
+      - store_artifacts:
+          path: ././artifacts
+          destination: ./jest-logs
+
+      - store_artifacts:
+          path: ././reports
+          destination: ./reports
 
 
 workflows:
   version: 2
-  build_and_test:
+
+  test_and_deploy:
     jobs:
-      - execute-iOS-detox
-      - execute-android-detox
+      - android-test
+      - ios-test
+
+  test_build:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
+
+    jobs:
+      - android-test
+      - ios-test

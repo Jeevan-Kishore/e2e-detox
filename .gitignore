@@ -60,3 +60,7 @@ buck-out/
 
 # idea
 .idea
+
+artifacts
+
+reports

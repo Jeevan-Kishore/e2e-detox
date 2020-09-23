@@ -1,6 +1,19 @@
 {
-    "setupFilesAfterEnv": ["./init.js"],
-    "testEnvironment": "node",
-    "reporters": ["detox/runners/jest/streamlineReporter"],
-    "verbose": true
+    "testEnvironment": "./environment",
+    "testRunner": "jest-circus/runner",
+    "testTimeout": 120000,
+    "reporters": [
+        "detox/runners/jest/streamlineReporter",
+        "jest-standard-reporter",
+        [
+            "jest-html-reporter",
+            {
+                "pageTitle": "Detox E2E Report",
+                "outputPath": "./reports/e2e-report.html"
+            }
+        ]
+    ],
+    "testRegex": "\\.e2e\\.js$",
+    "verbose": true,
+    "transformIgnorePatterns": ["/!node_modules\\/@quintype/native-components/src/constants.js/"]
 }
