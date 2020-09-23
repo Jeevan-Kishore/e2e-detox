@@ -222,12 +222,12 @@ jobs:
 workflows:
   version: 2
 
-  test_and_deploy:
+  run_detox_tests:
     jobs:
       - android-test
       - ios-test
 
-  test_build:
+  cron_detox_tests:
     triggers:
       - schedule:
           cron: "0 0 * * *"
